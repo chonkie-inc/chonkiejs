@@ -1,5 +1,19 @@
+import { init as initChunk, split_offsets, merge_splits } from '@chonkiejs/chunk';
 import { Tokenizer } from '@/tokenizer';
-import { Chunk, RecursiveRules, RecursiveLevel } from '@/types';
+import { Chunk, RecursiveRules, RecursiveLevel, IncludeDelim } from '@/types';
+
+// Track WASM initialization
+let wasmInitialized = false;
+
+/**
+ * Initialize the WASM module. Called automatically by RecursiveChunker.create().
+ */
+export async function initWasm(): Promise<void> {
+  if (!wasmInitialized) {
+    await initChunk();
+    wasmInitialized = true;
+  }
+}
 
 /**
  * Configuration options for RecursiveChunker.
@@ -28,7 +42,6 @@ export class RecursiveChunker {
   public readonly rules: RecursiveRules;
   public readonly minCharactersPerChunk: number;
   private tokenizer: Tokenizer;
-  private readonly sep: string = '✄';
   private readonly CHARS_PER_TOKEN: number = 6.5;
 
   private constructor(
@@ -68,6 +81,9 @@ export class RecursiveChunker {
    * });
    */
   static async create(options: RecursiveChunkerOptions = {}): Promise<RecursiveChunker> {
+    // Initialize WASM module
+    await initWasm();
+
     const {
       tokenizer = 'character',
       chunkSize = 512,
@@ -113,62 +129,37 @@ export class RecursiveChunker {
   }
 
   /**
-   * Split text according to a recursive level's rules.
+   * Split text according to a recursive level's rules using WASM.
    */
-  private async splitText(text: string, level: RecursiveLevel): Promise<string[]> {
-    // Whitespace splitting
+  private splitText(text: string, level: RecursiveLevel): string[] {
+    // Whitespace splitting - use WASM split with space delimiter
     if (level.whitespace) {
-      return text.split(' ');
+      const offsets = split_offsets(text, {
+        delimiters: ' ',
+        includeDelim: 'none',
+        minChars: 0
+      });
+      return offsets.map(([start, end]) => text.slice(start, end));
     }
 
-    // Delimiter splitting
+    // Delimiter splitting - use WASM split
     if (level.delimiters) {
-      let processedText = text;
-      const delims = Array.isArray(level.delimiters) ? level.delimiters : [level.delimiters];
+      const delims = Array.isArray(level.delimiters)
+        ? level.delimiters.join('')
+        : level.delimiters;
 
-      // Add separator based on includeDelim setting
-      if (level.includeDelim === 'prev') {
-        for (const delim of delims) {
-          processedText = processedText.replaceAll(delim, delim + this.sep);
-        }
-      } else if (level.includeDelim === 'next') {
-        for (const delim of delims) {
-          processedText = processedText.replaceAll(delim, this.sep + delim);
-        }
-      } else {
-        for (const delim of delims) {
-          processedText = processedText.replaceAll(delim, this.sep);
-        }
-      }
+      // Map includeDelim to WASM format
+      const includeDelim: 'prev' | 'next' | 'none' =
+        level.includeDelim === 'prev' ? 'prev' :
+        level.includeDelim === 'next' ? 'next' : 'none';
 
-      const splits = processedText.split(this.sep).filter(s => s !== '');
+      const offsets = split_offsets(text, {
+        delimiters: delims,
+        includeDelim,
+        minChars: this.minCharactersPerChunk
+      });
 
-      // Merge short splits
-      const merged: string[] = [];
-      let current = '';
-
-      for (const split of splits) {
-        if (split.length < this.minCharactersPerChunk) {
-          current += split;
-        } else if (current) {
-          current += split;
-          merged.push(current);
-          current = '';
-        } else {
-          merged.push(split);
-        }
-
-        if (current.length >= this.minCharactersPerChunk) {
-          merged.push(current);
-          current = '';
-        }
-      }
-
-      if (current) {
-        merged.push(current);
-      }
-
-      return merged;
+      return offsets.map(([start, end]) => text.slice(start, end));
     }
 
     // Token-based splitting (final level)
@@ -193,9 +184,9 @@ export class RecursiveChunker {
   }
 
   /**
-   * Merge splits to respect chunk size limits.
+   * Merge splits to respect chunk size limits using WASM.
    */
-  private mergeSplits(
+  private mergeSplitsWasm(
     splits: string[],
     tokenCounts: number[],
     combineWhitespace: boolean = false
@@ -213,60 +204,29 @@ export class RecursiveChunker {
       return [splits, tokenCounts];
     }
 
-    // Build cumulative token counts
-    const cumulativeTokenCounts: number[] = [0];
-    let sum = 0;
-    for (const count of tokenCounts) {
-      sum += count + (combineWhitespace ? 1 : 0);
-      cumulativeTokenCounts.push(sum);
-    }
+    // Use WASM merge_splits
+    const result = merge_splits(tokenCounts, this.chunkSize, combineWhitespace);
 
-    // Merge splits to fit chunk size
+    // Build merged strings from indices
     const merged: string[] = [];
     const combinedTokenCounts: number[] = [];
     let currentIndex = 0;
 
-    while (currentIndex < splits.length) {
-      const currentTokenCount = cumulativeTokenCounts[currentIndex];
-      const requiredTokenCount = currentTokenCount + this.chunkSize;
+    for (let i = 0; i < result.indices.length; i++) {
+      const endIndex = result.indices[i];
+      const slicedSplits = splits.slice(currentIndex, endIndex);
 
-      let index = this.bisectLeft(cumulativeTokenCounts, requiredTokenCount, currentIndex) - 1;
-      index = Math.min(index, splits.length);
-
-      if (index === currentIndex) {
-        index += 1;
-      }
-
-      // Merge splits
       if (combineWhitespace) {
-        merged.push(splits.slice(currentIndex, index).join(' '));
+        merged.push(slicedSplits.join(' '));
       } else {
-        merged.push(splits.slice(currentIndex, index).join(''));
+        merged.push(slicedSplits.join(''));
       }
 
-      combinedTokenCounts.push(
-        cumulativeTokenCounts[Math.min(index, splits.length)] - currentTokenCount
-      );
-      currentIndex = index;
+      combinedTokenCounts.push(result.tokenCounts[i]);
+      currentIndex = endIndex;
     }
 
     return [merged, combinedTokenCounts];
-  }
-
-  /**
-   * Binary search helper for merging splits.
-   */
-  private bisectLeft(arr: number[], value: number, lo: number = 0): number {
-    let hi = arr.length;
-    while (lo < hi) {
-      const mid = (lo + hi) >>> 1;
-      if (arr[mid] < value) {
-        lo = mid + 1;
-      } else {
-        hi = mid;
-      }
-    }
-    return lo;
   }
 
   /**
@@ -292,13 +252,13 @@ export class RecursiveChunker {
       throw new Error(`No rule found at level ${level}`);
     }
 
-    // Split according to current level's rules
-    const splits = await this.splitText(text, currRule);
+    // Split according to current level's rules (using WASM)
+    const splits = this.splitText(text, currRule);
     const tokenCounts = await Promise.all(
       splits.map(split => this.estimateTokenCount(split))
     );
 
-    // Merge splits based on level type
+    // Merge splits based on level type (using WASM)
     let merged: string[];
     let combinedTokenCounts: number[];
 
@@ -307,12 +267,12 @@ export class RecursiveChunker {
       [merged, combinedTokenCounts] = [splits, tokenCounts];
     } else if (currRule.delimiters === undefined && currRule.whitespace) {
       // Whitespace level - merge with spaces
-      [merged, combinedTokenCounts] = this.mergeSplits(splits, tokenCounts, true);
+      [merged, combinedTokenCounts] = this.mergeSplitsWasm(splits, tokenCounts, true);
       // Add space prefix to all but first split
       merged = merged.slice(0, 1).concat(merged.slice(1).map(t => ' ' + t));
     } else {
       // Delimiter level - merge without spaces
-      [merged, combinedTokenCounts] = this.mergeSplits(splits, tokenCounts, false);
+      [merged, combinedTokenCounts] = this.mergeSplitsWasm(splits, tokenCounts, false);
     }
 
     // Recursively process merged splits

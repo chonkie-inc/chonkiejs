@@ -1,6 +1,6 @@
 {
   "name": "@chonkiejs/core",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Core chunking library for Chonkie - lightweight and efficient text chunking",
   "license": "MIT",
   "homepage": "https://docs.chonkie.ai",
@@ -34,6 +34,9 @@
     "text-processing",
     "tokenization"
   ],
+  "dependencies": {
+    "@chonkiejs/chunk": "^0.9.3"
+  },
   "devDependencies": {
     "rimraf": "^6.0.1",
     "ts-node": "^10.9.2",

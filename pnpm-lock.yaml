@@ -62,6 +62,10 @@ importers:
         version: 3.2.4(@types/node@22.18.11)(tsx@4.20.6)
 
   packages/core:
+    dependencies:
+      '@chonkiejs/chunk':
+        specifier: ^0.9.3
+        version: 0.9.3
     devDependencies:
       rimraf:
         specifier: ^6.0.1
@@ -170,6 +174,9 @@ packages:
 
   '@changesets/write@0.4.0':
     resolution: {integrity: sha512-CdTLvIOPiCNuH71pyDu3rA+Q0n65cmAbXnwWH84rKGiFumFzkmHNT8KHTMEchcxN+Kl8I54xGUhJ7l3E7X396Q==}
+
+  '@chonkiejs/chunk@0.9.3':
+    resolution: {integrity: sha512-uUOeoFGY3s6kzAoKskI50weZN0zvW3oLwUijA1uX7Wxuy9yZStF2IvGuXRigMgP2g/L85lsotYGkjpBMLjQnrg==}
 
   '@chonkiejs/core@0.0.5':
     resolution: {integrity: sha512-Y6geZY+/9AyDy5i+h+aRY1g873d8fe/Xz6vndSo+FrP1hzDDBmAgJXhaZhZqZFQ7RraiNP8ImTiOddNmiiP/hw==}
@@ -1730,6 +1737,8 @@ snapshots:
       fs-extra: 7.0.1
       human-id: 4.1.2
       prettier: 2.8.8
+
+  '@chonkiejs/chunk@0.9.3': {}
 
   '@chonkiejs/core@0.0.5': {}
 
