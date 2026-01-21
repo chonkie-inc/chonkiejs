@@ -186,7 +186,7 @@ export class RecursiveChunker {
   /**
    * Merge splits to respect chunk size limits using WASM.
    */
-  private mergeSplitsWasm(
+  private mergeSplits(
     splits: string[],
     tokenCounts: number[],
     combineWhitespace: boolean = false
@@ -267,12 +267,12 @@ export class RecursiveChunker {
       [merged, combinedTokenCounts] = [splits, tokenCounts];
     } else if (currRule.delimiters === undefined && currRule.whitespace) {
       // Whitespace level - merge with spaces
-      [merged, combinedTokenCounts] = this.mergeSplitsWasm(splits, tokenCounts, true);
+      [merged, combinedTokenCounts] = this.mergeSplits(splits, tokenCounts, true);
       // Add space prefix to all but first split
       merged = merged.slice(0, 1).concat(merged.slice(1).map(t => ' ' + t));
     } else {
       // Delimiter level - merge without spaces
-      [merged, combinedTokenCounts] = this.mergeSplitsWasm(splits, tokenCounts, false);
+      [merged, combinedTokenCounts] = this.mergeSplits(splits, tokenCounts, false);
     }
 
     // Recursively process merged splits
