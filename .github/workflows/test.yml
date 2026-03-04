@@ -10,6 +10,9 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    env:
+      CHONKIE_API_KEY: ${{ secrets.CHONKIE_API_KEY }}
+
     strategy:
       matrix:
         node-version: [20.x]
@@ -30,7 +33,12 @@ jobs:
     - name: Install dependencies
       run: pnpm install --frozen-lockfile
 
-    - name: Run tests
-      run: pnpm test
-      env:
-        CHONKIE_API_KEY: ${{ secrets.CHONKIE_API_KEY }} 
+    - name: Build
+      run: pnpm run build
+
+    - name: Run unit tests
+      run: pnpm --filter @chonkiejs/core test
+
+    - name: Run integration tests
+      if: ${{ env.CHONKIE_API_KEY != '' }}
+      run: pnpm --filter @chonkiejs/cloud test
