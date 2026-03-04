@@ -34,7 +34,7 @@ Rate limit exceeded. Please:
   } else if (statusCode === 404) {
     helpText = `
 Endpoint not found: ${endpoint}
-- Verify you're using the latest version of @hippolib/cloud
+- Verify you're using the latest version of @chonkiejs/cloud
 - Check the API documentation`;
   } else if (statusCode >= 500) {
     helpText = `
@@ -48,9 +48,9 @@ Unexpected error occurred.`;
   }
 
   const footer = `
-
+  
 If this error persists:
-- Open an issue: https://github.com/chonkie-inc/chonkie-ts/issues
+- Open an issue: https://github.com/chonkie-inc/chonkiejs/issues
 - Contact maintainer: bhavnick@chonkie.ai
 - Include the error message and what you were trying to do`;
 

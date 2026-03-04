@@ -8,7 +8,7 @@ _HuggingFace tokenizer support for Chonkie - extends @chonkiejs/core with real t
 
 [![npm version](https://img.shields.io/npm/v/@chonkiejs/token)](https://www.npmjs.com/package/@chonkiejs/token)
 [![npm license](https://img.shields.io/npm/l/@chonkiejs/token)](https://www.npmjs.com/package/@chonkiejs/token)
-[![GitHub](https://img.shields.io/badge/github-chonkie--ts-black.svg?logo=github)](https://github.com/chonkie-inc/chonkie-ts)
+[![GitHub](https://img.shields.io/badge/github-chonkie--ts-black.svg?logo=github)](https://github.com/chonkie-inc/chonkiejs)
 
 </div>
 

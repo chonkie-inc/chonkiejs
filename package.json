@@ -5,13 +5,13 @@
   "description": "Monorepo for Chonkie - lightweight and efficient text chunking library",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/chonkie-inc/chonkie-ts.git"
+    "url": "git+https://github.com/chonkie-inc/chonkiejs.git"
   },
   "workspaces": [
     "packages/*"
   ],
   "scripts": {
-    "clean": "rimraf packages/*/dist",
+    "clean": "rimraf --glob packages/*/dist",
     "build": "npm run clean && npm run build --workspace=packages/core && npm run build --workspace=packages/cloud",
     "test": "npm run build && npm run test --workspace=packages/core && npm run test --workspace=packages/cloud",
     "changeset": "changeset",

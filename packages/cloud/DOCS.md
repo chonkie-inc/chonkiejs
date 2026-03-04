@@ -578,6 +578,6 @@ The cloud package requires `@chonkiejs/core` as a peer dependency.
 ## Support
 
 If you encounter issues:
-- Open an issue: https://github.com/chonkie-inc/chonkie-ts/issues
+- Open an issue: https://github.com/chonkie-inc/chonkiejs/issues
 - Contact: bhavnick@chonkie.ai
 - Check API status: https://api.chonkie.ai

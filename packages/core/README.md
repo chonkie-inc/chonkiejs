@@ -9,7 +9,7 @@ _Core chunking library for Chonkie - lightweight and efficient text chunking wit
 [![npm version](https://img.shields.io/npm/v/@chonkiejs/core)](https://www.npmjs.com/package/@chonkiejs/core)
 [![npm license](https://img.shields.io/npm/l/@chonkiejs/core)](https://www.npmjs.com/package/@chonkiejs/core)
 [![Documentation](https://img.shields.io/badge/docs-DOCS.md-blue.svg)](./DOCS.md)
-[![GitHub](https://img.shields.io/badge/github-chonkie--ts-black.svg?logo=github)](https://github.com/chonkie-inc/chonkie-ts)
+[![GitHub](https://img.shields.io/badge/github-chonkie--ts-black.svg?logo=github)](https://github.com/chonkie-inc/chonkiejs)
 
 </div>
 

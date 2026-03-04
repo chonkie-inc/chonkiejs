@@ -16,8 +16,8 @@ Welcome fellow CHONKer! We're thrilled you want to contribute to Chonkie. Every 
 
 ```bash
 # 1. Fork and clone the repository
-git clone https://github.com/chonkie-inc/chonkie-ts.git
-cd chonkie-ts
+git clone https://github.com/chonkie-inc/chonkiejs.git
+cd chonkiejs
 
 # 2. Install dependencies   
 npm install

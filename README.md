@@ -9,7 +9,7 @@
 [![npm license](https://img.shields.io/npm/l/@chonkiejs/core)](https://www.npmjs.com/package/@chonkiejs/core)
 [![npm bundle size](https://img.shields.io/bundlephobia/min/@chonkiejs/core)](https://www.npmjs.com/package/@chonkiejs/core)
 [![Discord](https://dcbadge.limes.pink/api/server/https://discord.gg/rYYp6DC4cv?style=flat)](https://discord.gg/rYYp6DC4cv)
-[![Github Stars](https://img.shields.io/github/stars/chonkie-inc/chonkie-ts?style=social)](https://github.com/chonkie-inc/chonkie-ts)
+[![Github Stars](https://img.shields.io/github/stars/chonkie-inc/chonkiejs?style=social)](https://github.com/chonkie-inc/chonkiejs)
 
 _🦛 CHONK your texts in TypeScript with Chonkie!✨ The no-nonsense lightweight and efficient chunking library._
 

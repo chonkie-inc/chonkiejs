@@ -9,6 +9,9 @@ export type { RecursiveChunkerOptions } from '@/recursive';
 export { TokenChunker } from '@/token';
 export type { TokenChunkerOptions } from '@/token';
 
+export { TableChunker } from '@/table';
+export type { TableChunkerOptions } from '@/table';
+
 export { Tokenizer } from '@/tokenizer';
 
 export { Chunk, RecursiveLevel, RecursiveRules } from '@/types';

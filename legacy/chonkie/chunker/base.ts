@@ -163,7 +163,7 @@ export abstract class BaseChunker {
     }
     // If only one text, process it directly without batch overhead, progress not shown for single item.
     if (texts.length === 1) {
-      return [await this.chunk(texts[0]) as Chunk[] ];
+      return [await this.chunk(texts[0]) as Chunk[]];
     }
 
     // For multiple texts, use selected batch processing strategy

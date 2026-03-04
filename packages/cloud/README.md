@@ -9,7 +9,7 @@ _Cloud-based chunkers for Chonkie via api.chonkie.ai - semantic, neural, and AI-
 [![npm version](https://img.shields.io/npm/v/@chonkiejs/cloud)](https://www.npmjs.com/package/@chonkiejs/cloud)
 [![npm license](https://img.shields.io/npm/l/@chonkiejs/cloud)](https://www.npmjs.com/package/@chonkiejs/cloud)
 [![Documentation](https://img.shields.io/badge/docs-DOCS.md-blue.svg)](./DOCS.md)
-[![GitHub](https://img.shields.io/badge/github-chonkie--ts-black.svg?logo=github)](https://github.com/chonkie-inc/chonkie-ts)
+[![GitHub](https://img.shields.io/badge/github-chonkie--ts-black.svg?logo=github)](https://github.com/chonkie-inc/chonkiejs)
 
 </div>
 
