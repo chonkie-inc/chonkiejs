@@ -35,8 +35,8 @@ export class FastChunker {
   public readonly prefix: boolean;
   public readonly consecutive: boolean;
   public readonly forwardFallback: boolean;
-  private readonly encoder: TextEncoder;
-  private readonly decoder: TextDecoder;
+  private readonly encoder = new TextEncoder();
+  private readonly decoder = new TextDecoder();
 
   private constructor(options: Required<Omit<FastChunkerOptions, 'pattern'>> & { pattern?: string | Uint8Array }) {
     if (options.chunkSize <= 0) {
@@ -49,8 +49,6 @@ export class FastChunker {
     this.prefix = options.prefix;
     this.consecutive = options.consecutive;
     this.forwardFallback = options.forwardFallback;
-    this.encoder = new TextEncoder();
-    this.decoder = new TextDecoder();
   }
 
   /**
