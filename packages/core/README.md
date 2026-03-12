@@ -69,6 +69,8 @@ for (const chunk of chunks) {
 |------|-------------|
 | `RecursiveChunker` | Recursively splits text using hierarchical rules (paragraphs → sentences → punctuation → words → characters). Each level only activates if chunks exceed the configured size. |
 | `TokenChunker` | Splits text into fixed-size token chunks with optional overlap. Uses character-based tokenization by default, or HuggingFace models with @chonkiejs/token. |
+| `TableChunker` | Splits Markdown or HTML tables into smaller table chunks while repeating the original header in each chunk. Supports row-based and token-based modes. |
+| `FastChunker` | Uses byte-based boundary detection through `@chonkiejs/chunk` for very fast chunking with delimiter or pattern controls. |
 
 For detailed API documentation, configuration options, and advanced usage, see [DOCS.md](./DOCS.md).
 

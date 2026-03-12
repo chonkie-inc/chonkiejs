@@ -6,6 +6,8 @@ Complete API reference and usage guide for @chonkie/core.
 
 - [Installation](#installation)
 - [RecursiveChunker](#recursivechunker)
+- [TableChunker](#tablechunker)
+- [FastChunker](#fastchunker)
 - [Tokenizer](#tokenizer)
 - [Chunk](#chunk)
 - [RecursiveRules](#recursiverules)
@@ -83,6 +85,126 @@ The `RecursiveChunker` splits text hierarchically:
 5. **Characters** - Token-level splitting (final fallback)
 
 Each level only activates if chunks from the previous level exceed `chunkSize`.
+
+## FastChunker
+
+High-performance byte-based chunker powered by `@chonkiejs/chunk`.
+
+Use this chunker when you want delimiter/pattern boundary chunking with minimal overhead and do not need token-based limits.
+
+### Creation
+
+```typescript
+import { FastChunker } from '@chonkiejs/core';
+
+const chunker = await FastChunker.create({
+  chunkSize: 4096,
+  delimiters: '\n.?',
+  prefix: false,
+  consecutive: false,
+  forwardFallback: false
+});
+```
+
+### Options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `chunkSize` | `number` | `4096` | Target chunk size in bytes |
+| `delimiters` | `string` | `\"\\n.?\"` | Delimiter characters used for boundary search |
+| `pattern` | `string \| Uint8Array` | `undefined` | Multi-byte pattern to split on (overrides `delimiters`) |
+| `prefix` | `boolean` | `false` | Put delimiter/pattern at the start of the next chunk |
+| `consecutive` | `boolean` | `false` | Split at the start of consecutive delimiter/pattern runs |
+| `forwardFallback` | `boolean` | `false` | Search forward when no boundary is found in backward window |
+
+### Methods
+
+#### `chunk(text: string): Chunk[]`
+
+Chunks a single text into byte-bounded chunks.
+
+```typescript
+const chunks = chunker.chunk('First sentence. Second sentence. Third sentence.');
+
+for (const chunk of chunks) {
+  console.log(chunk.text);
+  console.log(`Position: ${chunk.startIndex}-${chunk.endIndex}`);
+  console.log(`Token count: ${chunk.tokenCount}`); // Always 0 for FastChunker
+}
+```
+
+#### `chunkBatch(texts: string[]): Chunk[][]`
+
+Chunks a batch of texts.
+
+```typescript
+const batch = chunker.chunkBatch([
+  'Document one...',
+  'Document two...',
+]);
+```
+
+## TableChunker
+
+Chunks Markdown and HTML tables into smaller sub-tables while keeping the original table header in every chunk.
+
+Supports two modes:
+- `row` mode: `chunkSize` is the maximum number of data rows per chunk.
+- token mode: `chunkSize` is the maximum token count per chunk.
+
+### Creation
+
+```typescript
+import { TableChunker } from '@chonkiejs/core';
+
+// Row mode (default): up to 3 data rows per chunk
+const rowChunker = await TableChunker.create({
+  tokenizer: 'row',
+  chunkSize: 3
+});
+
+// Token mode: use tokenizer-based limits
+const tokenChunker = await TableChunker.create({
+  tokenizer: 'character',
+  chunkSize: 512
+});
+```
+
+### Options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `tokenizer` | `Tokenizer \| 'row' \| string` | `'row'` | Chunking mode/tokenizer. `'row'` uses row-based chunking. |
+| `chunkSize` | `number` | `3` | Max rows per chunk (`'row'` mode) or max tokens per chunk (token mode). |
+
+### Methods
+
+#### `chunk(text: string): Chunk[]`
+
+Chunks a Markdown or HTML table string.
+
+```typescript
+const markdownTable = `
+| Name | Age | City |
+|------|-----|------|
+| Alice | 30 | NYC |
+| Bob | 25 | LA |
+| Carol | 35 | Chicago |
+`.trim();
+
+const chunker = await TableChunker.create({ tokenizer: 'row', chunkSize: 2 });
+const chunks = chunker.chunk(markdownTable);
+
+for (const chunk of chunks) {
+  console.log(chunk.text);
+}
+```
+
+### Notes
+
+- In row mode, `tokenCount` on output chunks represents number of data rows in that chunk.
+- In token mode, `tokenCount` represents tokenizer-based token count.
+- Empty/invalid table input returns an empty array.
 
 ## Tokenizer
 
@@ -356,6 +478,7 @@ All exports include full TypeScript type definitions:
 ```typescript
 import type {
   RecursiveChunkerOptions,
+  FastChunkerOptions,
   RecursiveLevelConfig,
   RecursiveRulesConfig,
   IncludeDelim
