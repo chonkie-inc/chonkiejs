@@ -98,6 +98,19 @@ describe('TableChunker', () => {
       expect(chunks[0].text).toBe(MARKDOWN_TABLE_SMALL);
     });
 
+    it('startIndex and endIndex should be consistent across chunks', async () => {
+      const chunker = await TableChunker.create({ chunkSize: 2 });
+      const chunks = chunker.chunk(MARKDOWN_TABLE);
+      expect(chunks.length).toBeGreaterThan(1);
+
+      for (let i = 0; i < chunks.length; i++) {
+        expect(chunks[i].startIndex).toBeLessThan(chunks[i].endIndex);
+        if (i > 0) {
+          expect(chunks[i].startIndex).toBeGreaterThanOrEqual(chunks[i - 1].endIndex);
+        }
+      }
+    });
+
     it('all data rows should appear across chunks', async () => {
       const chunker = await TableChunker.create({ chunkSize: 2 });
       const chunks = chunker.chunk(MARKDOWN_TABLE);

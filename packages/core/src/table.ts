@@ -257,7 +257,7 @@ export class TableChunker {
     const headerTokenCount = tok.countTokens(header);
     const footerTokenCount = footer ? tok.countTokens(footer) : 0;
     let currentTokenCount = headerTokenCount + footerTokenCount;
-    let currentIndex = 0;
+    let currentIndex = header.length;
     let currentChunk = [header];
     const chunks: Chunk[] = [];
 
@@ -266,20 +266,17 @@ export class TableChunker {
 
       if (currentTokenCount + rowSize >= this.chunkSize && currentChunk.length > 1) {
         const chunkText = currentChunk.join('') + footer;
-        const chunkBodyLen =
-          chunks.length === 0
-            ? currentChunk.join('').length
-            : currentChunk.join('').length - header.length;
+        const dataLen = currentChunk.slice(1).join('').length;
 
         chunks.push(
           new Chunk({
             text: chunkText,
             startIndex: currentIndex,
-            endIndex: currentIndex + chunkBodyLen,
+            endIndex: currentIndex + dataLen,
             tokenCount: currentTokenCount,
           })
         );
-        currentIndex += chunkBodyLen;
+        currentIndex += dataLen;
         currentChunk = [header, row];
         currentTokenCount = headerTokenCount + footerTokenCount + rowSize;
       } else {
@@ -291,16 +288,13 @@ export class TableChunker {
     // Flush remaining rows
     if (currentChunk.length > 1) {
       const chunkText = currentChunk.join('') + footer;
-      const chunkBodyLen =
-        chunks.length === 0
-          ? chunkText.length
-          : currentChunk.join('').length - header.length;
+      const dataLen = currentChunk.slice(1).join('').length;
 
       chunks.push(
         new Chunk({
           text: chunkText,
           startIndex: currentIndex,
-          endIndex: currentIndex + chunkBodyLen,
+          endIndex: currentIndex + dataLen,
           tokenCount: currentTokenCount,
         })
       );
