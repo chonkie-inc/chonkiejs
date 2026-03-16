@@ -16,6 +16,9 @@ export type { TableChunkerOptions } from '@/table';
 export { FastChunker } from '@/fast';
 export type { FastChunkerOptions } from '@/fast';
 
+export { SemanticChunker } from '@/semantic';
+export type { SemanticChunkerOptions, EmbedFunction, EmbeddingModel } from '@/semantic';
+
 export { Tokenizer } from '@/tokenizer';
 
 export { Chunk, RecursiveLevel, RecursiveRules } from '@/types';
