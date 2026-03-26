@@ -328,6 +328,7 @@ export class SemanticChunker {
     if (similarityWindow <= 0) throw new Error('similarityWindow must be greater than 0');
     if (minSentencesPerChunk <= 0) throw new Error('minSentencesPerChunk must be greater than 0');
     if (filterWindow < 3) throw new Error('filterWindow must be at least 3');
+    if (filterWindow % 2 === 0) throw new Error('filterWindow must be an odd number');
     if (filterPolyorder < 0 || filterPolyorder >= filterWindow) throw new Error('filterPolyorder must be non-negative and less than filterWindow');
     if (filterTolerance <= 0 || filterTolerance >= 1) throw new Error('filterTolerance must be between 0 and 1');
     if (skipWindow < 0) throw new Error('skipWindow must be non-negative');
@@ -419,12 +420,21 @@ export class SemanticChunker {
     const windowTexts = this.buildWindows(sentences);
     const sentenceTexts = sentences.slice(this.similarityWindow).map(s => s.text);
 
-    // Batch both in one call for better performance
+    // Batch all texts in one call for better performance
     const allTexts = [...windowTexts, ...sentenceTexts];
-    const embeddings = await this.embed(allTexts);
 
-    const windowEmbeds = embeddings.slice(0, windowTexts.length);
-    const sentenceEmbeds = embeddings.slice(windowTexts.length);
+    // Deduplicate unique strings to reduce embedding calls/cost for remote providers
+    const uniqueTexts = Array.from(new Set(allTexts));
+    const uniqueEmbeddings = await this.embed(uniqueTexts);
+
+    // Map unique embeddings back to their original strings
+    const embeddingMap = new Map<string, number[]>();
+    uniqueTexts.forEach((text, i) => {
+      embeddingMap.set(text, uniqueEmbeddings[i]);
+    });
+
+    const windowEmbeds = windowTexts.map((text) => embeddingMap.get(text)!);
+    const sentenceEmbeds = sentenceTexts.map((text) => embeddingMap.get(text)!);
 
     return windowEmbeds.map((w, i) => cosineSimilarity(w, sentenceEmbeds[i]));
   }
@@ -492,7 +502,17 @@ export class SemanticChunker {
     if (groups.length <= 1 || this.skipWindow === 0) return groups;
 
     const groupTexts = groups.map(g => g.map(s => s.text).join(''));
-    const embeddings = await this.embed(groupTexts);
+    
+    // Deduplicate strings to reduce cost/overhead
+    const uniqueTexts = Array.from(new Set(groupTexts));
+    const uniqueEmbeddings = await this.embed(uniqueTexts);
+
+    const embeddingMap = new Map<string, number[]>();
+    uniqueTexts.forEach((text, i) => {
+      embeddingMap.set(text, uniqueEmbeddings[i]);
+    });
+
+    const embeddings = groupTexts.map(text => embeddingMap.get(text)!);
 
     const merged: Sentence[][] = [];
     let i = 0;
