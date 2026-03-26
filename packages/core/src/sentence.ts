@@ -291,22 +291,29 @@ export class SentenceChunker {
     }
 
     const chunks: Chunk[] = [];
+    // Precompute token counts once to avoid repeated slice/map calls.
+    const tokenCounts = sentences.map(s => s.tokenCount);
     let pos = 0;
 
     while (pos < sentences.length) {
-      // Use merge_splits to find the split point
-      const remainingTokenCounts = sentences.slice(pos).map(s => s.tokenCount);
-      const result = merge_splits(remainingTokenCounts, this.chunkSize);
+      let currentTokens = 0;
+      let splitIdx = pos;
 
-      let splitIdx: number;
-      if (result.indices.length > 0) {
-        // First merge group ends at result.indices[0]
-        splitIdx = pos + result.indices[0];
-      } else {
-        splitIdx = sentences.length;
+      // Greedily extend the chunk while respecting chunkSize, but always
+      // include at least minSentencesPerChunk sentences.
+      while (splitIdx < sentences.length) {
+        const nextTokens = currentTokens + tokenCounts[splitIdx];
+        const sentencesInChunk = splitIdx - pos + 1;
+
+        if (nextTokens > this.chunkSize && sentencesInChunk > this.minSentencesPerChunk) {
+          break;
+        }
+
+        currentTokens = nextTokens;
+        splitIdx++;
       }
 
-      // Enforce minimum sentences per chunk
+      // Fallback: ensure at least minSentencesPerChunk sentences per chunk.
       if (splitIdx - pos < this.minSentencesPerChunk) {
         if (pos + this.minSentencesPerChunk <= sentences.length) {
           splitIdx = pos + this.minSentencesPerChunk;
