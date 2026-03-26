@@ -22,6 +22,9 @@ export type { SentenceChunkerOptions } from '@/sentence';
 export { CodeChunker } from '@/code';
 export type { CodeChunkerOptions } from '@/code';
 
+export { SemanticChunker } from '@/semantic';
+export type { SemanticChunkerOptions, EmbedFunction, EmbeddingModel } from '@/semantic';
+
 export { Tokenizer } from '@/tokenizer';
 
 export { Chunk, RecursiveLevel, RecursiveRules } from '@/types';
