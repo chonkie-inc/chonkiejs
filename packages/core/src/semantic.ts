@@ -56,7 +56,11 @@ export interface SemanticChunkerOptions {
   /** Minimum sentences that must appear in a chunk. (default: 1) */
   minSentencesPerChunk?: number;
 
-  /** Sentences shorter than this character count are dropped. (default: 24) */
+  /**
+   * Minimum characters per sentence. Sentences shorter than this are merged
+   * with adjacent sentences until the minimum length is satisfied; content is
+   * not dropped. (default: 24)
+   */
   minCharactersPerSentence?: number;
 
   /**
