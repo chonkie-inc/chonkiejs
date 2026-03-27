@@ -16,6 +16,7 @@ _🦛 CHONK your texts in TypeScript with Chonkie!✨ The no-nonsense lightweigh
 [Installation](#-installation) •
 [Usage](#-usage) •
 [Chunkers](#chunkers) •
+[Benchmarks](#-benchmarks) •
 [Acknowledgements](#acknowledgements) •
 [Citation](#citation)
 
@@ -68,6 +69,13 @@ for (const chunk of chunks) {
 | [@chonkiejs/core](./packages/core) | Local chunking (Recursive, Token) with character-based tokenization | Zero |
 | [@chonkiejs/cloud](./packages/cloud) | Cloud-based chunkers (Semantic, Neural, Code, etc.) via api.chonkie.ai | @chonkiejs/core |
 | [@chonkiejs/token](./packages/token) | HuggingFace tokenizer support for core chunkers | @huggingface/transformers |
+
+## ⚡ Benchmarks
+
+Latency comparison between the Python (`chonkie`) and JavaScript (`chonkiejs`) implementations across chunker types (geometric mean over multiple runs):
+
+![Latency comparison](./assets/latency_avg_ms_log.png)
+![Latency comparison (log scale)](./assets/latency_seconds_log.png) 
 
 ## Contributing
 
