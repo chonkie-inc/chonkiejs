@@ -22,7 +22,7 @@
   },
   "scripts": {
     "clean": "rimraf dist",
-    "build": "npm run clean && tsc && tsc-alias -p tsconfig.json --resolve-full-paths",
+    "build": "pnpm run clean && tsc && tsc-alias -p tsconfig.json --resolve-full-paths",
     "test": "vitest run"
   },
   "files": [

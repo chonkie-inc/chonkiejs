@@ -12,11 +12,11 @@
   ],
   "scripts": {
     "clean": "rimraf --glob packages/*/dist",
-    "build": "npm run clean && npm run build --workspace=packages/core",
-    "test": "npm run build && npm run test --workspace=packages/core",
+    "build": "pnpm run clean && pnpm --filter @chonkiejs/core run build",
+    "test": "pnpm run build && pnpm --filter @chonkiejs/core run test",
     "changeset": "changeset",
     "version": "changeset version",
-    "release": "npm run build && changeset publish"
+    "release": "pnpm run build && changeset publish"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.7",
