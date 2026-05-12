@@ -73,8 +73,8 @@ importers:
         version: 3.7.6
     devDependencies:
       '@chonkiejs/core':
-        specifier: ^0.0.5
-        version: 0.0.5
+        specifier: workspace:*
+        version: link:../core
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
@@ -175,9 +175,6 @@ packages:
 
   '@chonkiejs/chunk@0.9.3':
     resolution: {integrity: sha512-uUOeoFGY3s6kzAoKskI50weZN0zvW3oLwUijA1uX7Wxuy9yZStF2IvGuXRigMgP2g/L85lsotYGkjpBMLjQnrg==}
-
-  '@chonkiejs/core@0.0.5':
-    resolution: {integrity: sha512-Y6geZY+/9AyDy5i+h+aRY1g873d8fe/Xz6vndSo+FrP1hzDDBmAgJXhaZhZqZFQ7RraiNP8ImTiOddNmiiP/hw==}
 
   '@cspotcode/source-map-support@0.8.1':
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
@@ -2237,8 +2234,6 @@ snapshots:
       prettier: 2.8.8
 
   '@chonkiejs/chunk@0.9.3': {}
-
-  '@chonkiejs/core@0.0.5': {}
 
   '@cspotcode/source-map-support@0.8.1':
     dependencies:
