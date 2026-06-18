@@ -18,7 +18,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           registry-url: 'https://registry.npmjs.org'
 
       - name: Setup pnpm
@@ -33,9 +33,7 @@ jobs:
         run: pnpm --filter @chonkiejs/core build
 
       - name: Publish to npm
-        run: pnpm --filter @chonkiejs/core publish --access public --no-git-checks
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: pnpm --filter @chonkiejs/core exec npm publish --access public --provenance --no-git-checks
 
   publish-token:
     name: Publish @chonkiejs/token
@@ -50,7 +48,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           registry-url: 'https://registry.npmjs.org'
 
       - name: Setup pnpm
@@ -65,6 +63,4 @@ jobs:
         run: pnpm --filter @chonkiejs/token... build
 
       - name: Publish to npm
-        run: pnpm --filter @chonkiejs/token publish --access public --no-git-checks
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: pnpm --filter @chonkiejs/token exec npm publish --access public --provenance --no-git-checks
